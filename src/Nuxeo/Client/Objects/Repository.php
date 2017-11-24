@@ -21,6 +21,8 @@ namespace Nuxeo\Client\Objects;
 
 use Nuxeo\Client\Constants;
 use Nuxeo\Client\Objects\Blob\Blob;
+use Nuxeo\Client\Objects\Workflow\Workflow;
+use Nuxeo\Client\Objects\Workflow\Workflows;
 use Nuxeo\Client\Spi\ClassCastException;
 use Nuxeo\Client\Spi\Http\Method\DELETE;
 use Nuxeo\Client\Spi\Http\Method\GET;
@@ -277,7 +279,7 @@ class Repository extends NuxeoEntity {
    * @throws ClassCastException
    */
   protected function updateDocumentByIdWithRepositoryName($documentId, $repositoryName, $document, $type = null) {
-    return $this->getResponseNew(PUT::create('repo/{repositoryName}id/{documentId}')
+    return $this->getResponseNew(PUT::create('repo/{repositoryName}/id/{documentId}')
       ->setBody($document),
       $type);
   }
@@ -338,6 +340,68 @@ class Repository extends NuxeoEntity {
    */
   public function fetchBlobById($documentId, $fieldPath) {
     return $this->getResponseNew(GET::create('id/{documentId}/@blob/{fieldPath}'), Blob::className);
+  }
+
+  //endregion
+
+  //region Workflows
+
+  /**
+   * @param string $documentId
+   * @param string $repositoryName
+   * @return Workflows
+   */
+  public function fetchWorkflowsById($documentId, $repositoryName = null) {
+    if(null !== $repositoryName) {
+      return $this->fetchWorkflowsByIdWithRepositoryName($documentId, $repositoryName);
+    }
+    return $this->getResponseNew(GET::create('id/{documentId}/@workflow'), Workflows::className);
+  }
+
+  /**
+   * @param string $documentId
+   * @param string $repositoryName
+   * @return Workflows
+   */
+  public function fetchWorkflowsByIdWithRepositoryName($documentId, $repositoryName) {
+    return $this->getResponseNew(GET::create('repo/{repositoryName}/id/{documentId}/@workflow'), Workflows::className);
+  }
+
+  /**
+   * @param string $documentId
+   * @param string $workflowModelName
+   * @param string $repositoryName
+   * @return Workflow
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  public function startWorkflowByNameWithDocId($workflowModelName, $documentId, $repositoryName = null) {
+    return $this->startWorkflowWithDocId(Workflow::createFromModelName($workflowModelName), $documentId, $repositoryName);
+  }
+
+  /**
+   * @param Workflow $workflow
+   * @param string $documentId
+   * @param string $repositoryName
+   * @return Workflow
+   */
+  public function startWorkflowWithDocId($workflow, $documentId, $repositoryName = null) {
+    if(null !== $repositoryName) {
+      return $this->startWorkflowWithDocIdWithRepositoryName($workflow, $documentId, $repositoryName);
+    }
+    return $this->getResponseNew(POST::create('id/{documentId}/@workflow')
+      ->setBody($workflow), Workflow::className);
+  }
+
+  /**
+   * @param Workflow $workflow
+   * @param string $documentId
+   * @param string $repositoryName
+   * @return Workflow
+   */
+  public function startWorkflowWithDocIdWithRepositoryName($workflow, $documentId, $repositoryName) {
+    return $this->getResponseNew(POST::create('repo/{repositoryName}/id/{documentId}/@workflow')
+      ->setBody($workflow), Workflow::className);
   }
 
   //endregion

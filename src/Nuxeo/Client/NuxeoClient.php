@@ -29,6 +29,7 @@ use Nuxeo\Client\Objects\Blob\Blob;
 use Nuxeo\Client\Objects\Blob\Blobs;
 use Nuxeo\Client\Objects\Operation;
 use Nuxeo\Client\Objects\Repository;
+use Nuxeo\Client\Objects\Workflow\Workflows;
 use Nuxeo\Client\Spi\Auth\AuthenticationInterceptor;
 use Nuxeo\Client\Spi\Http\Client;
 use Nuxeo\Client\Spi\Interceptor;
@@ -173,8 +174,15 @@ class NuxeoClient {
     return new Operation($this, $operationId);
   }
 
+  /**
+   * @return Repository
+   */
   public function repository() {
     return new Repository($this);
+  }
+
+  public function workflows() {
+    return new Workflows($this);
   }
 
   /**

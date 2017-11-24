@@ -45,6 +45,8 @@ class Constants {
 
   const ENTITY_TYPE_OPERATION = 'operation';
 
+  const ENTITY_TYPE_WORKFLOWS = 'workflows';
+
   const SECURITY_EVERYTHING = 'Everything';
 
   const SECURITY_RESTRICTED_READ = 'RestrictedRead';

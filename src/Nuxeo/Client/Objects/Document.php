@@ -144,12 +144,10 @@ class Document extends NuxeoEntity {
     if(array_key_exists($name, $this->properties)) {
       if(null !== $type && $this->getNuxeoClient()) {
         return $this->getNuxeoClient()->getConverter()->readData($this->properties[$name], $type);
-      } else {
-        return $this->properties[$name];
       }
-    } else {
-      return null;
+      return $this->properties[$name];
     }
+    return null;
   }
 
   /**
@@ -170,9 +168,8 @@ class Document extends NuxeoEntity {
   public function fetchBlob() {
     if($this->getNuxeoClient()) {
       return $this->getNuxeoClient()->repository()->fetchBlobById($this->getUid(), Constants::DEFAULT_FILE_CONTENT);
-    } else {
-      throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
     }
+    throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
   }
 
   /**
@@ -183,9 +180,33 @@ class Document extends NuxeoEntity {
   public function fetchChildren() {
     if($this->getNuxeoClient()) {
       return $this->getNuxeoClient()->repository()->fetchChildrenById($this->getUid());
-    } else {
-      throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
     }
+    throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
+  }
+
+  /**
+   * @return Workflow\Workflows
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  public function fetchWorkflows() {
+    if($this->getNuxeoClient()) {
+      return $this->getNuxeoClient()->repository()->fetchWorkflowsById($this->getUid());
+    }
+    throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
+  }
+
+  /**
+   * @param string $workflowModelName
+   * @return Workflow\Workflow
+   * @throws NuxeoClientException
+   * @throws ClassCastException
+   */
+  public function startWorkflow($workflowModelName) {
+    if($this->getNuxeoClient()) {
+      return $this->getNuxeoClient()->repository()->startWorkflowByNameWithDocId($this->getUid(), $workflowModelName);
+    }
+    throw new NuxeoClientException('You should pass to your Nuxeo object the client instance');
   }
 
   /**
